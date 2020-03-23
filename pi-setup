@@ -5,17 +5,19 @@
 external_uuid="9EA6141CA613F40D"
 mount_loc="/media/external"
 
-if [ "$EUID" -ne 0 ]; then
-	echo "Please run as root"
-	exit 1
-fi
-
 # First check make sure the external device is mounted on the Pi
 if ! grep -qs '/media/external ' /proc/mounts; then
+	if [ "$EUID" -ne 0 ]; then
+		echo "Please run as root"
+		exit 1
+	fi
+
 	mkdir -p $mount_loc
 	mount -U $external_uuid $mount_loc
+	echo "Mounted! Rerun script as non root"
+	exit 0
 fi
 
 # Rebuild and rerun the docker image
 docker build -t pi-private-cloud:latest .
-docker run -v $mount_loc:$mount_loc pi-private-cloud:latest
+docker run -p 80:80/tcp -v $mount_loc:$mount_loc pi-private-cloud:latest

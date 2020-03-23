@@ -1,0 +1,16 @@
+#!/bin/bash
+
+disable_apps="comments files_sharing files_versions"
+data_loc="/media/external/owncloud"
+
+mkdir -p $data_loc
+
+# Install and configure nextcloud
+pushd /var/www/owncloud
+sudo -u www-data php occ maintenance:install --data-dir $data_loc --database 'sqlite' --database-name 'owncloud' --admin-user 'mike' --admin-pass 'password'
+for app in $disable_apps_; do sudo -u www-data php occ app:disable $app; done
+chmod 770 $data_loc
+popd
+
+# Start the apache server
+apachectl start

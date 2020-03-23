@@ -15,4 +15,8 @@ RUN apt install -y php7.3 php7.3-curl php7.3-sqlite3 php7.3-gmp php7.3-zip php7.
 RUN wget -q -O - http://download.owncloud.org/community/owncloud-latest.tar.bz2 | tar jx -C /var/www/
 RUN chown -R www-data:www-data /var/www/owncloud
 
-# Create 
+# Copy in configuration files and setup scripts
+EXPOSE 80/tcp
+ADD resources/docker-post-install /root/
+ADD resources/000-default.conf /etc/apache2/sites-available/
+#CMD ["/home/root/docker-post-install"]
